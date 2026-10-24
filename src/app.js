@@ -6,6 +6,7 @@ import marketRoutes from './routes/market.js';
 import authRoutes from './routes/auth.js';
 import accountRoutes from './routes/account.js';
 import orderRoutes from './routes/orders.js';
+import adminRoutes from './routes/admin.js';
 import { errorHandler, notFound } from './middleware/errors.js';
 
 export function createApp() {
@@ -24,6 +25,7 @@ export function createApp() {
   app.use('/api/auth', authRoutes);
   app.use('/api/account', accountRoutes);
   app.use('/api/orders', orderRoutes);
+  app.use('/api/admin', adminRoutes);
   app.use(notFound);
   app.use(errorHandler);
   return app;
