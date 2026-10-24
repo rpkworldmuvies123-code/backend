@@ -24,7 +24,8 @@ router.post('/register', async (req, res, next) => {
     const existing = await User.findOne({ email: parsed.data.email });
     if (existing) return res.status(409).json({ error: 'Account already exists' });
     const passwordHash = await bcrypt.hash(parsed.data.password, 12);
-    const user = await User.create({ email: parsed.data.email, passwordHash });
+    // Public registration must never be allowed to self-assign privileged roles.
+    const user = await User.create({ email: parsed.data.email, passwordHash, role: 'user' });
     res.status(201).json({ token: issueToken(user), user: { id: user.id, email: user.email, role: user.role } });
   } catch (error) { next(error); }
 });
