@@ -29,6 +29,15 @@ Node.js + Express API starter with MongoDB-backed registration/login, short-live
 - `GET /api/orders` (authenticated; returns empty list while broker is not configured)
 - `POST /api/orders` (authenticated; validates payload but intentionally refuses live order placement until a production broker adapter exists)
 
+## Admin API
+- `POST /api/auth/login` using a pre-created account with `role: "admin"` returns an admin JWT.
+- `GET /api/admin/overview` — user counts and integration state.
+- `GET /api/admin/users?page=1&limit=25&search=email` — paginated user list.
+- `PATCH /api/admin/users/:id/status` with `{ "status": "active" }` or `{ "status": "suspended" }` — status management.
+- `GET /api/admin/audit` — audited admin actions.
+- Grant the admin role out-of-band through a trusted database operator. Public registration always creates a standard user.
+- Payment processing is not implemented until a verified payment provider and settlement flow are integrated.
+
 ## Live broker integration — important
 No broker credentials were supplied, and this repository does **not** claim to support live trading yet. `src/services/broker/index.js` is a fail-closed adapter stub. Select a broker (e.g. one available to your Indian account) and implement its official API/OAuth flow using that broker's current documentation. Do not put API secrets in frontend environment variables or expose access tokens to browsers. Never accept a client-supplied broker access token as trusted input.
 
