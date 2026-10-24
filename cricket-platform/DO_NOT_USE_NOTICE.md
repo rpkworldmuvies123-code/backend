@@ -1,1 +1,0 @@
-This folder was created before the user clarified that existing repositories must not be used. Do not deploy or continue this project in this repository. Create a brand-new standalone repository named cricket-arena-live instead. The user expressly asked not to use existing repositories. This notice is retained only to prevent accidental reuse.
