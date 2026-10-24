@@ -25,7 +25,7 @@ router.post('/register', async (req, res, next) => {
     if (existing) return res.status(409).json({ error: 'Account already exists' });
     const passwordHash = await bcrypt.hash(parsed.data.password, 12);
     // Public registration must never be allowed to self-assign privileged roles.
-    const user = await User.create({ email: parsed.data.email, passwordHash, role: 'user' });
+    const user = await User.create({ email: parsed.data.email, passwordHash, role: 'user', status: 'active' });
     res.status(201).json({ token: issueToken(user), user: { id: user.id, email: user.email, role: user.role } });
   } catch (error) { next(error); }
 });
@@ -37,6 +37,7 @@ router.post('/login', async (req, res, next) => {
     if (!parsed.success) return res.status(400).json({ error: 'Valid email and password required' });
     const user = await User.findOne({ email: parsed.data.email }).select('+passwordHash');
     if (!user || !(await bcrypt.compare(parsed.data.password, user.passwordHash))) return res.status(401).json({ error: 'Invalid email or password' });
+    if (user.status === 'suspended') return res.status(403).json({ error: 'This account is suspended. Contact support.' });
     res.json({ token: issueToken(user), user: { id: user.id, email: user.email, role: user.role } });
   } catch (error) { next(error); }
 });
@@ -45,7 +46,7 @@ router.get('/me', requireAuth, async (req, res, next) => {
     if (!isDatabaseReady()) return res.status(503).json({ error: 'Database is not connected' });
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
-    res.json({ user: { id: user.id, email: user.email, role: user.role } });
+    res.json({ user: { id: user.id, email: user.email, role: user.role, status: user.status || 'active' } });
   } catch (error) { next(error); }
 });
 export default router;
